@@ -2,87 +2,69 @@
 
 using namespace std;
 
-Group::Group(const std::string& name) : groupname(name), next_id(1) {}
+Group::Group(const std::wstring& name) : groupname(name), next_id(1) {}
 
 Group::~Group() {
 	deleteAllStudents();
 }
 
-void Group::setGroupName(const std::string& name) {
+void Group::setGroupName(const std::wstring& name) {
 	groupname = name;
-	for (Student* student : students) {
+	for (auto& student : students) {
 		student->setGroup(groupname);
 	}
 }
 
 void Group::addStudent() {
-	Student* newStudent = new Student();
+	auto newStudent = make_shared<Student>();
 	newStudent->readFromConsole();
 	newStudent->setID(next_id);
+	wcout << next_id << endl;
 	next_id++;
 	newStudent->setGroup(groupname);
 	students.push_back(newStudent);
 }
 
 const void Group::showAllStudents() {
-	cout << "Group: " << groupname << endl;
-	if (students.size() == 0) {
-		cout << "Group is empty" << endl;
+	wcout << L"Group: " << groupname << endl;
+	if (students.empty()) {
+		wcout << L"Group is empty" << endl;
+		return;
 	}
-	for (Student* student : students) {
+	for (const auto& student : students) {
 		student->writeToConsole();
-		cout << "---------------------------" << endl;
+		wcout << L"---------------------------" << endl;
 	}
 }
 
 void Group::deleteAllStudents() {
-	for (Student* student : students) {
-		delete student;
-	}
 	students.clear();
 	next_id = 1;
-	cout << "Group is cleared" << endl;
+	wcout << L"Group is cleared" << endl;
 }
 
 void Group::readStudentsFromFile(ifstream& inFile) {
-	getline(inFile, groupname);
-	int max_id = 0;
-	int studentCount;
-	inFile >> studentCount;
-	inFile.ignore(numeric_limits<streamsize>::max(), '\n');
-
-	for (int i = 0; i < studentCount; ++i) {
-		Student* student = new Student();
-		student->readFromFile(inFile);
-		student->setGroup(groupname);
-
-		if (!inFile.fail()) {
-			students.push_back(student);
-			if (student->getID() > max_id) {
-				max_id = student->getID();
-			}
-		}
-		else {
-			delete student;
-			cout << "Error reading student data from file" << endl;
-			break;
-		}
-	}
-	next_id = max_id + 1;
-	inFile.close();
-	cout << "Successfully readed data from file" << endl;
+	boost::archive::binary_iarchive ia(inFile);
+	ia >> *this;
+	wcout << L"Loaded group from file" << endl;		
 }
 
 void Group::writeStudentsToFile(ofstream& outFile) {
-	outFile << groupname << endl;
-	outFile << students.size() << endl;
-	for (Student* student : students) {
-		student->writeToFile(outFile);
-	}
-	outFile.close();
-	cout << "Successfully writed data to file" << endl;
+	boost::archive::binary_oarchive oa(outFile);
+	oa << *this;
+	wcout << L"Saved group to file" << endl;
 }
 
-const string Group::getGroupName() {
+const wstring Group::getGroupName() {
 	return groupname;
+}
+
+void Group::addGroupLeader() {
+	auto newLeader = make_shared<GroupLeader>();
+	newLeader->readFromConsole();
+	wcout << next_id << endl;
+	newLeader->setID(next_id);
+	newLeader->setGroup(groupname);
+	next_id++;
+	students.push_back(newLeader);
 }
