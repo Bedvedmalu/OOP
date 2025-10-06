@@ -8,21 +8,19 @@ Group::~Group() {
 	deleteAllStudents();
 }
 
+void Group::addStudent(std::shared_ptr<Student>& newStudent) {
+	newStudent->readFromConsole();
+	newStudent->setID(next_id);
+	next_id++;
+	newStudent->setGroup(groupname);
+	students.push_back(newStudent);
+}
+
 void Group::setGroupName(const std::wstring& name) {
 	groupname = name;
 	for (auto& student : students) {
 		student->setGroup(groupname);
 	}
-}
-
-void Group::addStudent() {
-	auto newStudent = make_shared<Student>();
-	newStudent->readFromConsole();
-	newStudent->setID(next_id);
-	wcout << next_id << endl;
-	next_id++;
-	newStudent->setGroup(groupname);
-	students.push_back(newStudent);
 }
 
 const void Group::showAllStudents() {
@@ -57,14 +55,4 @@ void Group::writeStudentsToFile(ofstream& outFile) {
 
 const wstring Group::getGroupName() {
 	return groupname;
-}
-
-void Group::addGroupLeader() {
-	auto newLeader = make_shared<GroupLeader>();
-	newLeader->readFromConsole();
-	wcout << next_id << endl;
-	newLeader->setID(next_id);
-	newLeader->setGroup(groupname);
-	next_id++;
-	students.push_back(newLeader);
 }

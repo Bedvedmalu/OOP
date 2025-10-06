@@ -11,6 +11,7 @@
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/vector.hpp>
 
+
 class Group {
 private:
 	std::wstring groupname;
@@ -30,15 +31,13 @@ public:
 
 	~Group();
 
-	void addStudent();
+	void addStudent(std::shared_ptr<Student>& newStudent);
 
 	const void showAllStudents();
 
 	void readStudentsFromFile(std::ifstream& inFile);
 
 	void writeStudentsToFile(std::ofstream& outFile);
-
-	void addGroupLeader();
 
 	void deleteAllStudents();
 

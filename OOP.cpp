@@ -46,14 +46,18 @@ int main() {
 		mainMenu();
 		choice = intInput(1, 7);
 		switch (choice) {
-		case 1:
+		case 1: {
 			wcout << L"ADD NEW STUDENT" << endl;
-			group.addStudent();
+			auto newStudent = make_shared<Student>();
+			group.addStudent(newStudent);
 			break;
-		case 2:
+		}
+		case 2: {
 			wcout << L"ADD GROUP LEADER" << endl;
-			group.addGroupLeader();
+			auto newStudent = make_shared<Student>();
+			group.addStudent(newStudent);
 			break;
+		}
 		case 3:
 			wcout << L"SHOW ALL STUDENTS" << endl;
 			group.showAllStudents();
