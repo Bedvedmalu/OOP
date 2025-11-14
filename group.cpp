@@ -1,58 +1,56 @@
 #include "group.h"
+#include <QDebug>
+
+#include "student.h"
+#include "groupleader.h"
+#include "mainwindow.h"
 
 using namespace std;
 
-Group::Group(const std::wstring& name) : groupname(name), next_id(1) {}
+// BOOST_CLASS_EXPORT(Student);
+// BOOST_CLASS_EXPORT(GroupLeader);
 
-Group::~Group() {
-	deleteAllStudents();
-}
+Group::Group(const string& name) : groupname(name), next_id(1) {}
 
-void Group::addStudent(std::shared_ptr<Student>& newStudent) {
-	newStudent->readFromConsole();
-	newStudent->setID(next_id);
-	next_id++;
-	newStudent->setGroup(groupname);
-	students.push_back(newStudent);
-}
-
-void Group::setGroupName(const std::wstring& name) {
-	groupname = name;
-	for (auto& student : students) {
-		student->setGroup(groupname);
-	}
-}
-
-const void Group::showAllStudents() {
-	wcout << L"Group: " << groupname << endl;
-	if (students.empty()) {
-		wcout << L"Group is empty" << endl;
-		return;
-	}
-	for (const auto& student : students) {
-		student->writeToConsole();
-		wcout << L"---------------------------" << endl;
-	}
-}
-
+Group::~Group() {}
 void Group::deleteAllStudents() {
-	students.clear();
-	next_id = 1;
-	wcout << L"Group is cleared" << endl;
+    students.clear();
+    next_id = 1;
 }
 
-void Group::readStudentsFromFile(ifstream& inFile) {
-	boost::archive::binary_iarchive ia(inFile);
-	ia >> *this;
-	wcout << L"Loaded group from file" << endl;		
+void Group::readStudentsFromFile(string& filePath) {
+    deleteAllStudents();
+    ifstream inFile(filePath, ios::binary);
+
+    boost::archive::binary_iarchive ia(inFile);
+    ia.register_type<Student>();
+    ia.register_type<GroupLeader>();
+    ia >> *this;
 }
 
-void Group::writeStudentsToFile(ofstream& outFile) {
-	boost::archive::binary_oarchive oa(outFile);
-	oa << *this;
-	wcout << L"Saved group to file" << endl;
+vector<shared_ptr<Student>> Group::getStudents() const {
+    return students;
 }
 
-const wstring Group::getGroupName() {
-	return groupname;
+void Group::paint(QPainter* painter, const QRect& area) const {
+    if (!painter || students.empty()) return;
+
+    painter->save();
+
+    const int rowHeight = 30;
+    const int headerHeight = 40;
+
+    QFont headerFont = painter->font();
+    headerFont.setPointSize(12);
+    headerFont.setBold(true);
+    painter->setFont(headerFont);
+
+    int currentY = area.top() + headerHeight;
+
+    using namespace placeholders;
+
+    for_each(students.begin(), students.end(),
+             bind(&Student::paint, _1, painter, area, rowHeight, area.width(), ref(currentY)));
+
+    painter->restore();
 }

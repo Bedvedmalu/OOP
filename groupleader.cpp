@@ -4,20 +4,33 @@ using namespace std;
 
 GroupLeader::GroupLeader() : Student() {}
 
-GroupLeader::GroupLeader(int id, std::wstring& fname, std::wstring& sname, int age, std::wstring& grp, std::wstring& pos, std::wstring& phone) : Student(id, fname, sname, age, grp), position(pos), phone_number(phone){}
+GroupLeader::GroupLeader(int id, const std::string& fname, const std::string& sname, int age,
+                         const std::string& grp, const std::string& pos, const std::string& phone)
+    : Student(id, fname, sname, age, grp), position(pos), phone_number(phone) {}
 
-void GroupLeader::readFromConsole() {
-	Student::readFromConsole();
-	wcout << L"Enter position: ";
-	wcin >> position;
-	wcout << L"Enter phone number: ";
-	wcin >> phone_number;
+std::string GroupLeader::getPosition() const {
+    return position;
 }
 
-void GroupLeader::writeToConsole() const {
-	Student::writeToConsole();
-	wcout << L"Position: " << position << endl;
-	wcout << L"Phone number: " << phone_number << endl;
+std::string GroupLeader::getPhoneNumber() const {
+    return phone_number;
 }
 
+void GroupLeader::paint(QPainter* painter, const QRect& rect, int rowHeight, int totalWidth, int& current_Y) {
+    int before_Y = current_Y;
+    Student::paint(painter, rect, rowHeight,  totalWidth, current_Y);
+    painter -> save();
 
+    QFont font = painter->font();
+    font.setPointSize(9);
+    painter->setFont(font);
+
+    painter->setPen(Qt::white);
+    QRect positionRect(rect.left() + 0.6 * totalWidth, before_Y, 0.2 * totalWidth, rowHeight);
+    QRect numberRect(rect.left() + 0.8 * totalWidth, before_Y, 0.2 * totalWidth, rowHeight);
+
+
+    painter->drawText(positionRect, Qt::AlignCenter, QString::fromStdString(position));
+    painter->drawText(numberRect, Qt::AlignCenter, QString::fromStdString(phone_number));
+    painter->restore();
+}

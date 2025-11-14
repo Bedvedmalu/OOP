@@ -1,48 +1,48 @@
+#ifndef GROUP_H
+#define GROUP_H
+
 #pragma once
-#include <iostream>
-#include <vector>
-#include <string>
-#include <fstream>
+
+#include "student.h"
 #include "groupleader.h"
-#include "students.h"
-#include <boost/archive/binary_oarchive.hpp>
+#include <fstream>
+#include <QString>
 #include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/access.hpp>
 
-
-class Group {
+class Group
+{
 private:
-	std::wstring groupname;
-	std::vector<std::shared_ptr<Student>> students;
-	int next_id;
+    std::string groupname;
+    std::vector<std::shared_ptr<Student>> students;
+    int next_id;
 
-	friend class boost::serialization::access;
+    friend class boost::serialization::access;
 
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& groupname;
-		ar& next_id;
-		ar& students;
-	}
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version) {
+        ar& groupname;
+        ar& next_id;
+        ar& students;
+    }
 public:
-	Group(const std::wstring& groupname = L"");
+    Group(const std::string& groupname = "");
 
-	~Group();
+    ~Group();
 
-	void addStudent(std::shared_ptr<Student>& newStudent);
+    void readStudentsFromFile(std::string& filePath);
 
-	const void showAllStudents();
+    void deleteAllStudents();
 
-	void readStudentsFromFile(std::ifstream& inFile);
+    // void writeStudentsToFile();
 
-	void writeStudentsToFile(std::ofstream& outFile);
+    std::vector<std::shared_ptr<Student>> getStudents() const;
 
-	void deleteAllStudents();
-
-	void setGroupName(const std::wstring& name);
-
-	const std::wstring getGroupName();
-
+    void paint(QPainter* painter, const QRect& area) const;
 };
+
+#endif // GROUP_H
