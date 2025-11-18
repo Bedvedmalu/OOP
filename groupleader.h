@@ -8,6 +8,9 @@
 #include <QRect>
 #include "student.h"
 
+
+class Dialog;
+
 class GroupLeader : public Student
 {
 private:
@@ -28,11 +31,26 @@ public:
                 int age, const std::string& group, const std::string& position, const std::string& phone_number);
 
     std::string getPosition() const;
+
     std::string getPhoneNumber() const;
 
+    void setPos(QString& pos);
+
+    void setPhone(QString& number);
+
+    QString getDisplayName() override;
+
+    void fillFields(Dialog* dialog) override;
+
     void paint(QPainter* painter, const QRect& rect, int rowHeight, int totalWidth, int& current_Y) override;
+
+    void changeStudent(std::string fname, std::string sname, int stage, std::string pos, std::string number) override;
+
 };
 
-BOOST_SERIALIZATION_SHARED_PTR(GroupLeader)
+
+
+
 BOOST_CLASS_EXPORT_KEY(GroupLeader)
+
 #endif // GROUPLEADER_H

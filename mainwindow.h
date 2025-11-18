@@ -4,6 +4,7 @@
 
 #include <QMainWindow>
 #include "group.h"
+#include "dialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,6 +27,12 @@ private slots:
     void on_loadButton_clicked();
 
     void on_deleteButton_clicked();
+
+    // void on_saveButton_clicked();
+
+    void on_editButton_clicked();
+
+    void on_saveButton_clicked();
 
 private:
     Ui::MainWindow *ui;

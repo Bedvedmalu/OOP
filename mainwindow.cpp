@@ -11,7 +11,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     studentTable = ui->studentTable;
-    // group.writeStudentsToFile();
+    studentTable->setAttribute(Qt::WA_TransparentForMouseEvents);
+    studentTable->setStyleSheet("background: transparent;");
+
 }
 
 MainWindow::~MainWindow()
@@ -26,13 +28,16 @@ void MainWindow::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    QRect widgetPosition = studentTable->geometry();
+    QRect widgetPosition = studentTable->contentsRect();
+    widgetPosition.translate(studentTable->mapTo(this, QPoint(0,0)));
+
     int start_x = widgetPosition.x();
     int start_y = widgetPosition.y();
-    int width =widgetPosition.width();
+    int width = widgetPosition.width();
 
     int cellHeight = 40;
-    QVector<double> widths = {0.1 * width, 0.2 * width, 0.2 * width, 0.1 * width, 0.2 * width, 0.2 * width};
+    QVector<int> widths = { int(0.1 * width), int(0.2 * width), int(0.2 * width), int(0.1 * width), int(0.2 * width), int(0.2 * width) };
+    widths[5] = width - (widths[0] + widths[1] + widths[2] + widths[3] + widths[4]);
 
     int current_x = start_x;
     QStringList headers = {"ID", "Имя", "Фамилия", "Возраст", "Должность", "Номер телефона"};
@@ -53,13 +58,41 @@ void MainWindow::paintEvent(QPaintEvent *event) {
 void MainWindow::on_loadButton_clicked()
 {
     string filePath = (QFileDialog::getOpenFileName(nullptr, "Выберите файл", "")).toStdString();
+    if (filePath == ""){
+        return;
+    }
     group.readStudentsFromFile(filePath);
     update();
  }
 
+void MainWindow::on_saveButton_clicked()
+{
+    string filePath = (QFileDialog::getSaveFileName(nullptr, "Выберите файл", "")).toStdString();
+    qDebug() << filePath;
+    if (filePath == "") {
+        return;
+    }
+    group.writeStudentsToFile(filePath);
+}
 
 void MainWindow::on_deleteButton_clicked()
 {
     group.deleteAllStudents();
     update();
 }
+
+
+void MainWindow::on_editButton_clicked()
+{
+    Dialog *dialog = new Dialog(group, this);
+
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    connect(dialog, &Dialog::finished, this, [this]() {
+        studentTable->update();
+    });
+    dialog->show();
+}
+
+
+
+

@@ -4,12 +4,16 @@
 
 #include <string>
 #include <QPainter>
+#include <QLineEdit>
 #include <QRect>
+#include "ui_dialog.h"
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/shared_ptr.hpp>
+
+class Dialog;
 
 class Student
 {
@@ -36,13 +40,29 @@ public:
     virtual ~Student();
 
     std::string getFName() const;
+
     std::string getSName() const;
+
     int getAge() const;
+
     int getId() const;
 
+    const void setFName(QString& fname);
+
+    void setSName(QString& sname);
+
+    void setAge(int& stage);
+
+
+    virtual QString getDisplayName();
+
+    virtual void fillFields(Dialog* dialog);
+
     virtual void paint(QPainter* painter, const QRect& rect, int rowHeight, int totalWidth, int& current_Y);
+
+    virtual void changeStudent(std::string fname, std::string sname, int stage, std::string pos, std::string number);
+
 };
 
-BOOST_SERIALIZATION_SHARED_PTR(Student)
 BOOST_CLASS_EXPORT_KEY(Student)
 #endif // STUDENT_H

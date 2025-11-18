@@ -14,6 +14,10 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/access.hpp>
 
+
+
+
+
 class Group
 {
 private:
@@ -38,11 +42,21 @@ public:
 
     void deleteAllStudents();
 
-    // void writeStudentsToFile();
+    void writeStudentsToFile(std::string& filePath);
 
-    std::vector<std::shared_ptr<Student>> getStudents() const;
+    std::vector<std::shared_ptr<Student>>& getStudents();
 
     void paint(QPainter* painter, const QRect& area) const;
+
+    void deleteStudent(int id);
+
+    void editStudent(int id, std::string fname, std::string sname, int stage, std::string pos, std::string number);
+
+    std::string getName();
+
+    void addStudent(const std::shared_ptr<Student>& newStudent);
+
+    int getNextId();
 };
 
 #endif // GROUP_H
